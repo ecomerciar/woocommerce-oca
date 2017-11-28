@@ -1,0 +1,41 @@
+[
+    {
+        "name": "juanchorossi/oca-php-api",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/juanchorossi/OCA-PHP-API.git",
+            "reference": "a9bf2bebd4da03571bda25714614397feae6de92"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/juanchorossi/OCA-PHP-API/zipball/a9bf2bebd4da03571bda25714614397feae6de92",
+            "reference": "a9bf2bebd4da03571bda25714614397feae6de92",
+            "shasum": ""
+        },
+        "time": "2016-02-02T22:36:59+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "oca.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0+"
+        ],
+        "authors": [
+            {
+                "name": "Juancho Rossi",
+                "email": "juanchorossi@gmail.com"
+            }
+        ],
+        "description": "PHP class for OCA Express Pak",
+        "keywords": [
+            "oca",
+            "oca express pak"
+        ]
+    }
+]

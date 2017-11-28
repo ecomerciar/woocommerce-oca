@@ -1,0 +1,18 @@
+{
+    "name": "juanchorossi/oca-php-api",
+    "description": "PHP class for OCA Express Pak",
+    "keywords": ["oca", "oca express pak"],
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Juancho Rossi",
+            "email": "juanchorossi@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "classmap": [
+            "oca.php"
+        ]
+    }
+}
