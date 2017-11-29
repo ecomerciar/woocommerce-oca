@@ -4,7 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-// Agregamos un shortcode [sucursales_oca]
+
+// =========================================================================
+/**
+ * Shortcode [sucursales_oca]
+ *
+ */
+add_shortcode ( 'sucursales_oca' , 'sucursales_oca_func' );
 function sucursales_oca_func( $atts, $content= NULL) {
 	if($_POST['cp']){
 		$post_data = [ "CodigoPostal" => intval($_POST['cp']) ];
@@ -66,8 +72,13 @@ function sucursales_oca_func( $atts, $content= NULL) {
 		return ob_get_clean();
 	}
 }
-add_shortcode ( 'sucursales_oca' , 'sucursales_oca_func' );
 
+
+// =========================================================================
+/**
+ * Function oca_leer_sucursales
+ *
+ */
 add_action( 'wp_ajax_oca_leer_sucursales', 'oca_leer_sucursales' );
 add_action( 'wp_ajax_nopriv_oca_leer_sucursales', 'oca_leer_sucursales' );
 function oca_leer_sucursales(){
@@ -85,6 +96,13 @@ function oca_leer_sucursales(){
 	$session->set('id_destino_sucursal_oca', $temp);
 }
 
+
+// =========================================================================
+/**
+ * Function enqueue_oca_scripts
+ *
+ */
+add_action( 'wp_enqueue_scripts', 'enqueue_oca_scripts' );
 function enqueue_oca_scripts() {
 if ( function_exists( 'is_woocommerce' ) ) {
 	if ( ! is_checkout() ) {
@@ -96,10 +114,15 @@ if ( function_exists( 'is_woocommerce' ) ) {
 	}
 }
 }
-add_action( 'wp_enqueue_scripts', 'enqueue_oca_scripts' );
 
-add_action( 'woocommerce_review_order_before_submit', 'check_if_oca' );
-function check_if_oca( $chosen_method ) {
+
+// =========================================================================
+/**
+ * Function check_if_oca_selected
+ *
+ */
+add_action( 'woocommerce_review_order_before_submit', 'check_if_oca_selected' );
+function check_if_oca_selected( $chosen_method ) {
 	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
 	$chosen_shipping = $chosen_methods[0]; 
 	$chosen_shipping = explode(" ",$chosen_shipping);
@@ -153,6 +176,11 @@ function check_if_oca( $chosen_method ) {
 	}
 }
 
+// =========================================================================
+/**
+ * Function obtener_centros_oca
+ *
+ */
 function obtener_centros_oca($cp){
 	$post_data = [ "CodigoPostal" => intval($cp) ];
 	$url = 'http://webservice.oca.com.ar/epak_tracking/Oep_TrackEPak.asmx/GetCentrosImposicionConServiciosByCP';
@@ -191,7 +219,14 @@ function obtener_centros_oca($cp){
 	
 }
 
-function kia_filter_checkout_fields($fields){
+
+// =========================================================================
+/**
+ * Function oca_filter_checkout_fields
+ *
+ */
+add_filter( 'woocommerce_checkout_fields', 'oca_filter_checkout_fields' );
+function oca_filter_checkout_fields($fields){
     $fields['oca'] = array(
             'sucursal_oca_destino' => array(
                 'type' => 'text',
@@ -209,9 +244,15 @@ function kia_filter_checkout_fields($fields){
 
     return $fields;
 }
-add_filter( 'woocommerce_checkout_fields', 'kia_filter_checkout_fields' );
 
-function kia_extra_checkout_fields(){ 
+
+// =========================================================================
+/**
+ * Function oca_extra_checkout_fields
+ *
+ */
+add_action( 'woocommerce_checkout_after_customer_details' ,'oca_extra_checkout_fields' );
+function oca_extra_checkout_fields(){ 
 		$checkout = WC()->checkout(); 
 		// because of this foreach, everything added to the array in the previous function will display automagically
 		foreach ( $checkout->checkout_fields['oca'] as $key => $field ) : ?>
@@ -220,12 +261,18 @@ function kia_extra_checkout_fields(){
 	
 			<?php endforeach; ?>
 	
-	<?php }
-add_action( 'woocommerce_checkout_after_customer_details' ,'kia_extra_checkout_fields' );
+<?php }
 
 
+
+// =========================================================================
+/**
+ * Function oca_save_extra_checkout_fields
+ *
+ */
 // save the extra field when checkout is processed
-function kia_save_extra_checkout_fields( $order, $data ){
+add_action( 'woocommerce_checkout_create_order', 'oca_save_extra_checkout_fields', 10, 2 );
+function oca_save_extra_checkout_fields( $order, $data ){
  
     // don't forget appropriate sanitization if you are using a different field type
     if( isset( $data['sucursal_oca_destino'] ) ) {
@@ -233,9 +280,14 @@ function kia_save_extra_checkout_fields( $order, $data ){
 		$order->save();		
     }
 }
-add_action( 'woocommerce_checkout_create_order', 'kia_save_extra_checkout_fields', 10, 2 );
 
 
+
+// =========================================================================
+/**
+ * Function agregar_boton_etiqueta_oca
+ *
+ */
 // Agregamos un botón a las ordenes completadas
 add_filter( 'woocommerce_admin_order_actions', 'agregar_boton_etiqueta_oca', 100, 2 );
 function agregar_boton_etiqueta_oca( $actions, $order ) {
@@ -247,13 +299,28 @@ function agregar_boton_etiqueta_oca( $actions, $order ) {
 	}
     return $actions;
 }
+
+
+
+// =========================================================================
+/**
+ * Function boton_etiquetas_oca_css
+ *
+ */
 // Icono para el botón de etiquetas dentro de manage orders
 add_action( 'admin_head', 'boton_etiquetas_oca_css' );
 function boton_etiquetas_oca_css() {
     echo '<style>.view.eti_oca::after { font-family: woocommerce; content: "\e028" !important; }</style>';
 }
 
+
+// =========================================================================
+/**
+ * Function agregar_columna_oca
+ *
+ */
 // Agregar columna de numeros de tracking, en el panel de ordenes
+add_filter( 'manage_edit-shop_order_columns', 'agregar_columna_oca');
 function agregar_columna_oca( $columns ) {
 	$new_columns = array();
 	foreach ( $columns as $column_name => $column_info ) {
@@ -264,8 +331,14 @@ function agregar_columna_oca( $columns ) {
 	}
 	return $new_columns;
 }
-add_filter( 'manage_edit-shop_order_columns', 'agregar_columna_oca');
 
+
+// =========================================================================
+/**
+ * Function agregar_contenido_columna_oca
+ *
+ */
+add_action( 'manage_shop_order_posts_custom_column', 'agregar_contenido_columna_oca' );
 function agregar_contenido_columna_oca( $column ) {
     global $post;
     if ( 'rastreo_oca' === $column ) {
@@ -275,11 +348,16 @@ function agregar_contenido_columna_oca( $column ) {
 		}
     }
 }
-add_action( 'manage_shop_order_posts_custom_column', 'agregar_contenido_columna_oca' );
 
+
+// =========================================================================
+/**
+ * Function agregar_estilo_columna_oca
+ *
+ */
+add_action( 'admin_print_styles', 'agregar_estilo_columna_oca' );
 function agregar_estilo_columna_oca() {
 		$css = '.column-rastreo_oca { width: 9%; }';
 		wp_add_inline_style( 'woocommerce_admin_styles', $css );
 	}
-add_action( 'admin_print_styles', 'agregar_estilo_columna_oca' );
 

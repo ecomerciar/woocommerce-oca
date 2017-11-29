@@ -458,7 +458,7 @@ function envios_oca_init() {
 			 * function cargar_operativas
 			 *
 			 * @access private
-			 * @return void
+			 * @return array
 			 */
 			private function cargar_operativas(){
 				$res = array();
@@ -478,7 +478,7 @@ function envios_oca_init() {
 			 * function calcular_medidas
 			 *
 			 * @access private
-			 * @return void
+			 * @return array
 			 */
 			private function calcular_medidas($productos = array()){
 				$res = array(

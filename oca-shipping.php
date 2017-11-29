@@ -4,6 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+
+// =========================================================================
+/**
+ * Function generar_envio_oca
+ *
+ */
+add_action( 'woocommerce_order_status_completed', 'generar_envio_oca');
 function generar_envio_oca( $order_id ){
 	$order = wc_get_order( $order_id );	
 	$envio_seleccionado = reset( $order->get_items( 'shipping' ) )->get_method_id();
@@ -29,8 +36,14 @@ function generar_envio_oca( $order_id ){
 		}
 	}
 }
-add_action( 'woocommerce_order_status_completed', 'generar_envio_oca');
 
+
+
+// =========================================================================
+/**
+ * Function crear_datos_oca
+ *
+ */
 function crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 	<ROWS>   
@@ -74,9 +87,16 @@ function crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	return $xml;
 }
 
+
+
+// =========================================================================
+/**
+ * Function agregar_envio_oca
+ *
+ */
 //Agrega envios OCA como metodo de envio internamente
+add_filter( 'woocommerce_shipping_methods', 'agregar_envio_oca' );
 function agregar_envio_oca( $methods ) {
 	$methods['oca'] = 'WC_OCA';
 	return $methods;
 }
-add_filter( 'woocommerce_shipping_methods', 'agregar_envio_oca' );
