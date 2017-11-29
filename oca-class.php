@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 //Creamos nuestra clase WC_OCA
-function envios_oca_init() {
+function woo_oca_envios_oca_init() {
 	if ( ! class_exists( 'WC_OCA' ) ) {
 		class WC_OCA extends WC_Shipping_Method {
 			/**
@@ -458,7 +458,7 @@ function envios_oca_init() {
 			 * function cargar_operativas
 			 *
 			 * @access private
-			 * @return void
+			 * @return array
 			 */
 			private function cargar_operativas(){
 				$res = array();
@@ -478,7 +478,7 @@ function envios_oca_init() {
 			 * function calcular_medidas
 			 *
 			 * @access private
-			 * @return void
+			 * @return array
 			 */
 			private function calcular_medidas($productos = array()){
 				$res = array(
@@ -546,4 +546,4 @@ function envios_oca_init() {
 		}
 	}
 }
-add_action( 'woocommerce_shipping_init', 'envios_oca_init' );
+add_action( 'woocommerce_shipping_init', 'woo_oca_envios_oca_init' );

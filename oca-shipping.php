@@ -4,13 +4,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-function generar_envio_oca( $order_id ){
+
+// =========================================================================
+/**
+ * Function generar_envio_oca
+ *
+ */
+add_action( 'woocommerce_order_status_completed', 'woo_oca_generar_envio_oca');
+function woo_oca_generar_envio_oca( $order_id ){
 	$order = wc_get_order( $order_id );	
 	$envio_seleccionado = reset( $order->get_items( 'shipping' ) )->get_method_id();
 	$envio = explode(" ", $envio_seleccionado);
 	if($envio[0] === 'oca'){
 		$datos = get_option($envio[2]);	
-		$xml = crear_datos_oca($datos, $order, $envio);
+		$xml = woo_oca_crear_datos_oca($datos, $order, $envio);
 		require_once trailingslashit( ABSPATH ) . 'wp-content/plugins/woocommerce-oca/oca/autoload.php';
 		$oca = new Oca($datos['cuit'], $datos[$envio[3]]);
 		if($datos['debug'] === 'yes'){
@@ -29,9 +36,15 @@ function generar_envio_oca( $order_id ){
 		}
 	}
 }
-add_action( 'woocommerce_order_status_completed', 'generar_envio_oca');
 
-function crear_datos_oca($datos = array(), $order = '', $envio = ''){
+
+
+// =========================================================================
+/**
+ * Function crear_datos_oca
+ *
+ */
+function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 	<ROWS>   
 		<cabecera ver="2.0" nrocuenta="'.$datos['nrocuenta'].'" />   
@@ -74,9 +87,16 @@ function crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	return $xml;
 }
 
+
+
+// =========================================================================
+/**
+ * Function agregar_envio_oca
+ *
+ */
 //Agrega envios OCA como metodo de envio internamente
-function agregar_envio_oca( $methods ) {
+add_filter( 'woocommerce_shipping_methods', 'woo_oca_agregar_envio_oca' );
+function woo_oca_agregar_envio_oca( $methods ) {
 	$methods['oca'] = 'WC_OCA';
 	return $methods;
 }
-add_filter( 'woocommerce_shipping_methods', 'agregar_envio_oca' );
