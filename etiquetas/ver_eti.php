@@ -8,7 +8,7 @@ if(file_exists('oca-etiqueta-'.$_GET['id'].'.pdf')){
 	header('Content-Transfer-Encoding: binary');
 	header('Accept-Ranges: bytes');
 	@readfile($file);
-}else{
+} else {
 	$post_data = array(
 		'idOrdenRetiro' => $_GET['id'],
 		'nroEnvio' => '',

@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 //Creamos nuestra clase WC_OCA
-function envios_oca_init() {
+function woo_oca_envios_oca_init() {
 	if ( ! class_exists( 'WC_OCA' ) ) {
 		class WC_OCA extends WC_Shipping_Method {
 			/**
@@ -114,7 +114,9 @@ function envios_oca_init() {
                     'cuit' => array(
 							'title' => __( 'CUIT', 'woocommerce' ),
 							'default'     => '',						
-                            'type' => 'text'
+							'type' => 'text',
+							'desc_tip' => true,
+							'description'        => 'Formato XX-XXXXXXXX-X',
 					),
 					'clase' => array(
 						'title'       => 'Si existe la clase',
@@ -176,6 +178,10 @@ function envios_oca_init() {
 						'default'     => '',
 						'desc_tip'    => true,
 					),
+					'contrareembolso_operativa1' => array(
+						'title' => __( 'Contrareembolso?', 'woocommerce' ),
+						'type' => 'checkbox'
+					),
 					'TituloOp2' => array(
 						'title' => __( 'Operativa 2', 'textdomain' ), 
 						'type' => 'title'
@@ -206,6 +212,10 @@ function envios_oca_init() {
 						'description'        => 'Dejar vacío si no se quiere usar',
 						'default'     => '',
 						'desc_tip'    => true,
+					),
+					'contrareembolso_operativa2' => array(
+						'title' => __( 'Contrareembolso?', 'woocommerce' ),
+						'type' => 'checkbox'
 					),
 					'TituloOp3' => array(
 						'title' => __( 'Operativa 3', 'textdomain' ), 
@@ -238,6 +248,10 @@ function envios_oca_init() {
 						'default'     => '',
 						'desc_tip'    => true,
 					),
+					'contrareembolso_operativa3' => array(
+						'title' => __( 'Contrareembolso?', 'woocommerce' ),
+						'type' => 'checkbox'
+					),
 					'TituloOp4' => array(
 						'title' => __( 'Operativa 4', 'textdomain' ), 
 						'type' => 'title'
@@ -268,6 +282,10 @@ function envios_oca_init() {
 						'description'        => 'Dejar vacío si no se quiere usar',
 						'default'     => '',
 						'desc_tip'    => true,
+					),
+					'contrareembolso_operativa4' => array(
+						'title' => __( 'Contrareembolso?', 'woocommerce' ),
+						'type' => 'checkbox'
 					)
 				);
 				// Cargamos todas las clases disponibles de WC y las insertamos en la config de oca
@@ -304,6 +322,32 @@ function envios_oca_init() {
 				$envio_gratis = $this->get_instance_option('envio_general_gratis');
 				$accion = $this->verificar_clases($productos);
 
+				$peso_total = $precio_total = 0;
+				$hay_producto_cero = false;
+				foreach($productos as $producto){
+					$peso_total += $producto['peso'];
+					$largo_total += $producto['largo'];
+					$ancho_total += $producto['ancho'];
+					$alto_total += $producto['alto'];
+					if($producto['peso'] == 0 || $producto['peso'] == '' || $producto['alto'] == 0 || $producto['alto'] == '' || $producto['largo'] == 0 || $producto['largo'] == '' || $producto['ancho'] == 0 || $producto['ancho'] == '' ){
+						$hay_producto_cero = true;
+						$producto_cero = $producto;
+						break;
+					}
+				}			
+				if($hay_producto_cero || $peso_total === '' || $largo_total === '' || $alto_total === '' || $ancho_total === ''){
+					if($this->get_instance_option('debug') === 'yes'){
+						$log = new WC_Logger();
+						if(isset($producto_cero)){
+							$log->add('oca','Detectado producto con malas dimensiones o peso: ');
+							$log->add('oca', print_r($producto_cero,true));
+						}else{
+							$log->add('oca','Detectado dimension/peso 0');
+						}
+					}
+					return;
+				}
+
 				
 				if($accion === 'envio_gratis' || $envio_gratis === 'yes'){
 
@@ -318,6 +362,7 @@ function envios_oca_init() {
 						$nombre = explode(" ", $nombre_operativa);
 						$operativa_seleccionada = array_shift($nombre);
 						$tipo_operativa = array_shift($nombre);
+						$contrareembolso = array_shift($nombre);
 						$nombre = implode(" ", $nombre);
 						if($this->get_instance_option('debug') === 'yes'){
 							$log = new WC_Logger();		
@@ -346,7 +391,16 @@ function envios_oca_init() {
 								$log->add( 'oca', "Se toma el CP del usuario: ".$cp." Y calculamos el precio: ".print_r($tarifa,true));						
 							}
 						}
-						$this->addRate('',$tarifa[0]['Total'], $nombre, $operativa_seleccionada, $tipo_operativa);
+						if($contrareembolso === 'yes'){
+							$precio = number_format($tarifa[0]['Total'], 2);
+							if($precio == 0){
+								$this->addRate('',0, $nombre.' (Pago a destino)', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');								
+							}else{
+								$this->addRate('',0, $nombre.' (Pago a destino - $'.$precio.')', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');
+							}
+						}else{
+							$this->addRate('',$tarifa[0]['Total'], $nombre, $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'no');
+						}
 					}
 
 				}
@@ -462,10 +516,10 @@ function envios_oca_init() {
 			 */
 			private function cargar_operativas(){
 				$res = array();
-				$res['operativa1 '.$this->get_instance_option('tipo_operativa1').' '.$this->get_instance_option('nombre_operativa1')] = $this->get_instance_option('operativa1');
-				$res['operativa2 '.$this->get_instance_option('tipo_operativa2').' '.$this->get_instance_option('nombre_operativa2')] = $this->get_instance_option('operativa2');
-				$res['operativa3 '.$this->get_instance_option('tipo_operativa3').' '.$this->get_instance_option('nombre_operativa3')] = $this->get_instance_option('operativa3');
-				$res['operativa4 '.$this->get_instance_option('tipo_operativa4').' '.$this->get_instance_option('nombre_operativa4')] = $this->get_instance_option('operativa4');
+				$res['operativa1 '.$this->get_instance_option('tipo_operativa1').' '.$this->get_instance_option('contrareembolso_operativa1').' '.$this->get_instance_option('nombre_operativa1')] = $this->get_instance_option('operativa1');
+				$res['operativa2 '.$this->get_instance_option('tipo_operativa2').' '.$this->get_instance_option('contrareembolso_operativa2').' '.$this->get_instance_option('nombre_operativa2')] = $this->get_instance_option('operativa2');
+				$res['operativa3 '.$this->get_instance_option('tipo_operativa3').' '.$this->get_instance_option('contrareembolso_operativa3').' '.$this->get_instance_option('nombre_operativa3')] = $this->get_instance_option('operativa3');
+				$res['operativa4 '.$this->get_instance_option('tipo_operativa4').' '.$this->get_instance_option('contrareembolso_operativa4').' '.$this->get_instance_option('nombre_operativa4')] = $this->get_instance_option('operativa4');
 				$res = array_filter($res);
 				return $res;		
 			}
@@ -520,7 +574,7 @@ function envios_oca_init() {
 			 * @param string $tipo, $precio, $servicio
 			 * @return array
 			 */
-			public function addRate($tipo = '', $precio = '', $nombre = '' , $operativa = '', $tipo_op = ''){
+			public function addRate($tipo = '', $precio = '', $nombre = '' , $operativa = '', $tipo_op = '', $precio_declarado = '', $cr){
 				if($tipo === 'gratis'){
 
 					$rate = array(
@@ -533,7 +587,7 @@ function envios_oca_init() {
 				}else if($precio !== ''){
 				
 					$rate = array(
-						'id' => "oca ".$tipo_op." ".$this->get_instance_option_key()." ".$operativa,
+						'id' => "oca ".$tipo_op." ".$this->get_instance_option_key()." ".$operativa." ".$precio_declarado." ".$cr,
 						'label' => $nombre,
 						'cost' => $precio,
 						'calc_tax' => 'per_item'
@@ -546,4 +600,4 @@ function envios_oca_init() {
 		}
 	}
 }
-add_action( 'woocommerce_shipping_init', 'envios_oca_init' );
+add_action( 'woocommerce_shipping_init', 'woo_oca_envios_oca_init' );

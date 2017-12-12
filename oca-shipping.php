@@ -10,14 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Function generar_envio_oca
  *
  */
-add_action( 'woocommerce_order_status_completed', 'generar_envio_oca');
-function generar_envio_oca( $order_id ){
+add_action( 'woocommerce_order_status_completed', 'woo_oca_generar_envio_oca');
+function woo_oca_generar_envio_oca( $order_id ){
 	$order = wc_get_order( $order_id );	
 	$envio_seleccionado = reset( $order->get_items( 'shipping' ) )->get_method_id();
 	$envio = explode(" ", $envio_seleccionado);
 	if($envio[0] === 'oca'){
 		$datos = get_option($envio[2]);	
-		$xml = crear_datos_oca($datos, $order, $envio);
+		$xml = woo_oca_crear_datos_oca($datos, $order, $envio);
 		require_once trailingslashit( ABSPATH ) . 'wp-content/plugins/woocommerce-oca/oca/autoload.php';
 		$oca = new Oca($datos['cuit'], $datos[$envio[3]]);
 		if($datos['debug'] === 'yes'){
@@ -44,7 +44,7 @@ function generar_envio_oca( $order_id ){
  * Function crear_datos_oca
  *
  */
-function crear_datos_oca($datos = array(), $order = '', $envio = ''){
+function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 	<ROWS>   
 		<cabecera ver="2.0" nrocuenta="'.$datos['nrocuenta'].'" />   
@@ -72,10 +72,10 @@ function crear_datos_oca($datos = array(), $order = '', $envio = ''){
 						//Se obtienen los datos del producto
 						if($product->get_weight() !== ''){
 							$peso = $product->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="0" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$envio[4].'" cant="1" />';           
 						}else{
 							$peso = $product_variado->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="0" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$envio[4].'" cant="1" />';           
 						}
 					}
 					$xml .= '</paquetes>         
@@ -95,8 +95,8 @@ function crear_datos_oca($datos = array(), $order = '', $envio = ''){
  *
  */
 //Agrega envios OCA como metodo de envio internamente
-add_filter( 'woocommerce_shipping_methods', 'agregar_envio_oca' );
-function agregar_envio_oca( $methods ) {
+add_filter( 'woocommerce_shipping_methods', 'woo_oca_agregar_envio_oca' );
+function woo_oca_agregar_envio_oca( $methods ) {
 	$methods['oca'] = 'WC_OCA';
 	return $methods;
 }
