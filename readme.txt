@@ -5,11 +5,11 @@ Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 1.1
+Stable tag: 1.2
+Language: Spanish
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-=== Plugin Name ===
 WooCommerce OCA Envios
 
 == Description ==
@@ -41,6 +41,9 @@ Primera salida.
 = 1.1 =
 Reiniciar Cache de Envíos
 
+= 1.1 =
+Reiniciar Cache de Envíos
+
 == Screenshots == 
 
 1. Configuracion para Argentina
@@ -52,10 +55,16 @@ Reiniciar Cache de Envíos
 
 == Changelog ==
 
-= 1.0 =
-* Primera subida
+= 1.2 =
+* Código optimizado
+* Agregada sanitización de información del usuario antes de realizar un envío
 
 = 1.1 =
-* Sumamos posibilidad de Pago en Destino y Corregimos un bug de sucursales
+* Agregada verificación de dimensiones y pesos cero
+* Agregada descripción sobre el CUIT en la configuración del plugin
+* Agregada la opción para enviar con contrareembolso
+
+= 1.0 =
+* Primera subida
 
 Si necesitas ayuda podes contactarnos a traves de nuestra web de [Ecomerciar](http://ecomerciar.com/ "Ecomerciar").
