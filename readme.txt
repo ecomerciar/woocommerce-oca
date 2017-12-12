@@ -41,7 +41,7 @@ Primera salida.
 = 1.1 =
 Reiniciar Cache de Envíos
 
-= 1.1 =
+= 1.2 =
 Reiniciar Cache de Envíos
 
 == Screenshots == 
