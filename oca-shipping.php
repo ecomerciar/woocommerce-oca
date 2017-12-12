@@ -45,6 +45,39 @@ function woo_oca_generar_envio_oca( $order_id ){
  *
  */
 function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
+
+	$countries_obj = new WC_Countries();
+	$country_states_array = $countries_obj->get_states();
+	if($order->get_shipping_first_name()){
+		$provincia = $country_states_array['AR'][$order->get_shipping_state()];
+		$datos['nombre_cliente'] = $order->get_shipping_first_name();
+		$datos['apellido_cliente'] = $order->get_shipping_last_name();
+		$datos['direccion_cliente'] = $order->get_shipping_address_1();
+		$datos['ciudad_cliente'] = $order->get_shipping_city();
+		$datos['cp_cliente'] = $order->get_shipping_postcode();
+		$datos['observaciones_cliente'] = $order->get_shipping_address_2();
+	}else{
+		$provincia = $country_states_array['AR'][$order->get_billing_state()];
+		$datos['nombre_cliente'] = $order->get_billing_first_name();
+		$datos['apellido_cliente'] = $order->get_billing_last_name();
+		$datos['direccion_cliente'] = $order->get_billing_address_1();
+		$datos['ciudad_cliente'] = $order->get_billing_city();
+		$datos['cp_cliente'] = $order->get_billing_postcode();
+		$datos['observaciones_cliente'] = $order->get_billing_address_2();
+	} 
+	$datos['provincia_cliente'] = $provincia;	
+	$datos['telefono_cliente'] = $order->get_billing_phone();
+	$datos['celular_cliente'] = $order->get_billing_phone();
+	$datos['email_cliente'] = $order->get_billing_email();
+	$datos['sucursal_oca_destino'] = $order->get_meta('sucursal_oca_destino');
+
+	// Se filtran las comillas
+	$datos = array_map(function($value){
+		$value = str_replace('"', "", $value);
+		$value = str_replace("'", "", $value);
+		return $value;
+	}, $datos);
+
 	$xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 	<ROWS>   
 		<cabecera ver="2.0" nrocuenta="'.$datos['nrocuenta'].'" />   
@@ -52,15 +85,7 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 			<origen calle="'.$datos['calle'].'" nro="'.$datos['nro'].'" piso="'.$datos['piso'].'" depto="'.$datos['depto'].'" cp="'.$datos['cp'].'" localidad="'.$datos['localidad'].'" provincia="'.$datos['provincia'].'" contacto="" email="'.$datos['email'].'" solicitante="" observaciones="" centrocosto="1" idfranjahoraria="'.$datos['idfranjahoraria'].'" idcentroimposicionorigen="'.$datos['idcentroimposicionorigen'].'" fecha="'.current_time('Ymd').'">       
 				<envios>         
 					<envio idoperativa="'.$datos[$envio[3]].'" nroremito="'.$order->get_order_number().'">';
-					$countries_obj = new WC_Countries();
-					$country_states_array = $countries_obj->get_states();
-					if($order->get_shipping_first_name()){
-						$provincia = $country_states_array['AR'][$order->get_shipping_state()];
-						$xml .= '<destinatario apellido="'.$order->get_shipping_last_name().'" nombre="'.$order->get_shipping_first_name().'" calle="'.$order->get_shipping_address_1().'" nro="0" piso="" depto="" localidad="'.$order->get_shipping_city().'" provincia="'.$provincia.'" cp="'.$order->get_shipping_postcode().'" telefono="'.$order->get_billing_phone().'" email="'.$order->get_billing_email().'" idci="'.$order->get_meta('sucursal_oca_destino').'" celular="'.$order->get_billing_phone().'" observaciones="'.$order->get_shipping_address_2().'" />';
-					}else{
-						$provincia = $country_states_array['AR'][$order->get_billing_state()];
-						$xml .= '<destinatario apellido="'.$order->get_billing_last_name().'" nombre="'.$order->get_billing_first_name().'" calle="'.$order->get_billing_address_1().'" nro="0" piso="" depto="" localidad="'.$order->get_billing_city().'" provincia="'.$provincia.'" cp="'.$order->get_billing_postcode().'" telefono="'.$order->get_billing_phone().'" email="'.$order->get_billing_email().'" idci="'.$order->get_meta('sucursal_oca_destino').'" celular="'.$order->get_billing_phone().'" observaciones="'.$order->get_billing_address_2().'" />';						
-					}           
+					$xml .= '<destinatario apellido="'.$datos['apellido_cliente'].'" nombre="'.$datos['nombre_cliente'].'" calle="'.$datos['direccion_cliente'].'" nro="0" piso="" depto="" localidad="'.$datos['ciudad_cliente'].'" provincia="'.$datos['provincia_cliente'].'" cp="'.$datos['cp_cliente'].'" telefono="'.$datos['telefono_cliente'].'" email="'.$datos['email_cliente'].'" idci="'.$datos['sucursal_oca_destino'].'" celular="'.$datos['celular_cliente'].'" observaciones="'.$datos['observaciones_cliente'].'" />';
 					$xml .= '<paquetes>';
 					$items = $order->get_items();
 					foreach ( $items as $item ) {
