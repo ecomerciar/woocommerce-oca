@@ -7,6 +7,77 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // =========================================================================
 /**
+ * Shortcode [rastreo_oca]
+ *
+ */
+add_shortcode ( 'rastreo_oca' , 'woo_oca_rastreo_oca_func' );
+function woo_oca_rastreo_oca_func( $atts, $content= NULL) {
+	if($_POST['id']){
+		$post_data = [ "CodigoPostal" => intval($_POST['id']) ];
+		$url = 'http://webservice.oca.com.ar/epak_tracking/Oep_TrackEPak.asmx/GetCentrosImposicionConServiciosByCP';
+		$response = wp_remote_get( $url, array(
+				'method' => 'GET',
+				'timeout' => 45,
+				'redirection' => 5,
+				'httpversion' => '1.0',
+				'blocking' => true,
+				'headers' => array(),
+				'body' => $post_data,
+				'cookies' => array()
+			)
+		);
+		$response = $response['http_response']->get_response_object()->body;
+		$dom = new DOMDocument();
+		@$dom->loadXML($response);
+		$xpath = new DOMXpath($dom);
+	
+		$c_imp = array();
+		foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci)
+		{
+			$c_imp[] = array(	'idCentroImposicion'	=> $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
+								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+								'Sigla'					=> $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
+								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+								'Calle'					=> $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
+								'Numero'				=> $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
+								'Localidad'				=> $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
+								'Provincia'				=> $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
+								'Telefono'				=> $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
+								'CodigoPostal'			=> $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
+							);
+		}
+		ob_start();
+		echo '<table>';
+		echo '<tr>
+			<th>ID</th>
+			<th>Nombre</th>
+			<th>Calle</th>
+			<th>Número</th>
+			<th>Localidad</th>
+			<th>Teléfono</th>
+			<th>CP</th>
+		  </tr>';
+		foreach($c_imp as $centro){
+			echo '<tr>
+					<td>'.$centro['idCentroImposicion'].'</td>
+					<td>'.$centro['Sucursal'].'</td>
+					<td>'.$centro['Calle'].'</td>
+					<td>'.$centro['Numero'].'</td>
+					<td>'.$centro['Localidad'].'</td>
+					<td>'.$centro['Telefono'].'</td>
+					<td>'.$centro['CodigoPostal'].'</td>
+	  			</tr>';
+		}					
+		echo '</table>';
+		return ob_get_clean();
+	}
+}
+
+
+
+
+// =========================================================================
+/**
  * Shortcode [sucursales_oca]
  *
  */
@@ -161,7 +232,7 @@ function woo_oca_check_if_oca_selected( $chosen_method ) {
 <?php
 	if ($chosen_shipping[0] === 'oca' && ($chosen_shipping[1] === 'pas' || $chosen_shipping[1] === 'sas')) {
 		echo "<h4>Selecciona la sucursal de OCA donde quieres recibir tu compra</h4>";
-		$centros = woo_oca_obtener_centros_oca(WC()->customer->get_shipping_postcode());
+		$centros = woo_oca_obtener_centros_oca(WC()->customer->get_shipping_postcode(), $chosen_shipping[5] );
 		echo '<select id="SucursalesOcaDestino" style="margin-bottom:15px" onchange="cambiar_suc(this.value)" >';
 		echo '<option value="">Seleccionar</option>';
 		foreach($centros as $centro){
@@ -181,7 +252,7 @@ function woo_oca_check_if_oca_selected( $chosen_method ) {
  * Function obtener_centros_oca
  *
  */
-function woo_oca_obtener_centros_oca($cp){
+function woo_oca_obtener_centros_oca($cp, $contrareembolso){
 	$post_data = [ "CodigoPostal" => intval($cp) ];
 	$url = 'http://webservice.oca.com.ar/epak_tracking/Oep_TrackEPak.asmx/GetCentrosImposicionConServiciosByCP';
 	$response = wp_remote_get( $url, array(
@@ -201,19 +272,38 @@ function woo_oca_obtener_centros_oca($cp){
 	$xpath = new DOMXpath($dom);
 
 	$c_imp = array();
-	foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci)
-	{
-		$c_imp[] = array(	'idCentroImposicion'	=> $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
-							'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-							'Sigla'					=> $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
-							'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-							'Calle'					=> $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
-							'Numero'				=> $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
-							'Localidad'				=> $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
-							'Provincia'				=> $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
-							'Telefono'				=> $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
-							'CodigoPostal'			=> $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
-						);
+	if($contrareembolso === 'yes'){
+		foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci)
+		{
+			if( $ci->getElementsByTagName('TipoAgencia')->item(0)->nodeValue === 'Sucursal OCA'){
+				$c_imp[] = array(	'idCentroImposicion'	=> $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
+									'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+									'Sigla'					=> $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
+									'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+									'Calle'					=> $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
+									'Numero'				=> $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
+									'Localidad'				=> $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
+									'Provincia'				=> $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
+									'Telefono'				=> $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
+									'CodigoPostal'			=> $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
+								);
+			}
+		}
+	}else{
+		foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci)
+		{
+			$c_imp[] = array(	'idCentroImposicion'	=> $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
+								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+								'Sigla'					=> $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
+								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+								'Calle'					=> $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
+								'Numero'				=> $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
+								'Localidad'				=> $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
+								'Provincia'				=> $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
+								'Telefono'				=> $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
+								'CodigoPostal'			=> $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
+							);
+		}
 	}
 	return $c_imp;
 	
