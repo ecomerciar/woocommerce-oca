@@ -18,7 +18,7 @@ function woo_oca_generar_envio_oca( $order_id ){
 	if($envio[0] === 'oca'){
 		$datos = get_option($envio[2]);	
 		$xml = woo_oca_crear_datos_oca($datos, $order, $envio);
-		require_once trailingslashit( ABSPATH ) . 'wp-content/plugins/woocommerce-oca/oca/autoload.php';
+		require_once plugin_dir_path( __FILE__ ) . 'oca/autoload.php';
 		$oca = new Oca($datos['cuit'], $datos[$envio[3]]);
 		if($datos['debug'] === 'yes'){
 			$log = new WC_Logger();		

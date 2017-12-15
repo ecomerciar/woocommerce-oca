@@ -161,7 +161,6 @@ class Oca
 
 		$e_corp['mensaje'] = $res;
 		$e_corp['enviado'] = $_query_string;
-		$e_corp['enviado_tipo'] = $_query_string_tipo;
 		return $e_corp;
 	}
 	// =========================================================================

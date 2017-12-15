@@ -39,10 +39,13 @@ En la configuracion del plugin hay un link donde podes hacer click y buscar a tr
 Primera salida.
 
 = 1.1 =
-Reiniciar Cache de EnvÃ­os
+Reiniciar Cache de Envíos
 
 = 1.2 =
-Reiniciar Cache de EnvÃ­os
+Reiniciar Cache de Envíos
+
+= 1.3 =
+Nada
 
 == Screenshots == 
 
@@ -55,14 +58,18 @@ Reiniciar Cache de EnvÃ­os
 
 == Changelog ==
 
+= 1.3 =
+* Ya no es necesario reiniciar la caché de envío
+* Arreglado bug importante sobre el funcionamiento del plugin
+
 = 1.2 =
-* CÃ³digo optimizado
-* Agregada sanitizaciÃ³n de informaciÃ³n del usuario antes de realizar un envÃ­o
+* Código optimizado
+* Agregada sanitización de información del usuario antes de realizar un envío
 
 = 1.1 =
-* Agregada verificaciÃ³n de dimensiones y pesos cero
-* Agregada descripciÃ³n sobre el CUIT en la configuraciÃ³n del plugin
-* Agregada la opciÃ³n para enviar con contrareembolso
+* Agregada verificación de dimensiones y pesos cero
+* Agregada descripción sobre el CUIT en la configuración del plugin
+* Agregada la opción para enviar con contrareembolso
 
 = 1.0 =
 * Primera subida
