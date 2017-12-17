@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Woocommerce OCA Envíos ===
 Contributors: ecomerciar
 Donate link: http://ecomerciar.com/
 Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
