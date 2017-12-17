@@ -1,4 +1,4 @@
-=== Woocommerce OCA Envíos ===
+=== Woocommerce OCA Envios ===
 Contributors: ecomerciar
 Donate link: http://ecomerciar.com/
 Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
@@ -39,10 +39,10 @@ En la configuracion del plugin hay un link donde podes hacer click y buscar a tr
 Primera salida.
 
 = 1.1 =
-Reiniciar Cache de Envíos
+Reiniciar Cache de Envios
 
 = 1.2 =
-Reiniciar Cache de Envíos
+Reiniciar Cache de Envios
 
 == Screenshots == 
 
@@ -56,20 +56,20 @@ Reiniciar Cache de Envíos
 == Changelog ==
 
 = 1.4 =
-* Agregada página de tracking
+* Agregada pagina de tracking
 
 = 1.3 =
-* Ya no es necesario reiniciar la caché de envío
+* Ya no es necesario reiniciar la cache de envio
 * Arreglado bug importante sobre el funcionamiento del plugin
 
 = 1.2 =
-* Código optimizado
-* Agregada sanitización de información del usuario antes de realizar un envío
+* Codigo optimizado
+* Agregada sanitizacion de informacion del usuario antes de realizar un envio
 
 = 1.1 =
-* Agregada verificación de dimensiones y pesos cero
-* Agregada descripción sobre el CUIT en la configuración del plugin
-* Agregada la opción para enviar con contrareembolso
+* Agregada verificacion de dimensiones y pesos cero
+* Agregada descripcion sobre el CUIT en la configuracion del plugin
+* Agregada la opcion para enviar con contrareembolso
 
 = 1.0 =
 * Primera subida
