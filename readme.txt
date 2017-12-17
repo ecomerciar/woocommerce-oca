@@ -12,18 +12,18 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 WooCommerce OCA Envios
 
-== Description ==
+== Descripcion ==
 
 Suma envios a traves de OCA a tu pagina de WooCommerce a traves de la API OCA E-Pak.
 
-== Instalation ==
+== Instalacion ==
 
-1. Subi los plugins a la carpeta `/wp-content/plugins/woocommerce-oca`, o instala el plugin a traves de WordPress plugins directamente.
+1. Subi los archivos del plugin a la carpeta `/wp-content/plugins/woo-oca`, o instala el plugin a traves de WordPress plugins directamente.
 2. Active el plugin a traves de la pantalla de 'Plugins' en WordPress
 3. Usa el plugin en la configuracion de Envios y Zonas de Woocommerce
 3. Rellena tu informacion relevante
 
-== Frequently Asked Questions ==
+== Preguntas Frecuentes ==
 
 = Como ingreso mi CUIT? =
 
@@ -33,7 +33,7 @@ El CUIT se ingresa en formato XX-XXXXXXXX-X
 
 En la configuracion del plugin hay un link donde podes hacer click y buscar a traves de tu codigo postal tu sucursal de origen mas cercana.
 
-== Upgrade Notice ==
+== Noticias de Actualizacion ==
 
 = 1.0 =
 Primera salida.
@@ -44,7 +44,7 @@ Reiniciar Cache de Envios
 = 1.2 =
 Reiniciar Cache de Envios
 
-== Screenshots == 
+== Imagenes == 
 
 1. Configuracion para Argentina
 2. Configuracion de OCA
@@ -53,7 +53,7 @@ Reiniciar Cache de Envios
 5. Sucursal de Origen OCA
 6. Lista de Sucursales de OCA
 
-== Changelog ==
+== Historial de cambios ==
 
 = 1.4 =
 * Agregada pagina de tracking
