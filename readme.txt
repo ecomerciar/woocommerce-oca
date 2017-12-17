@@ -5,7 +5,7 @@ Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 1.2
+Stable tag: 1.4
 Language: Spanish
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -44,9 +44,6 @@ Reiniciar Cache de Envíos
 = 1.2 =
 Reiniciar Cache de Envíos
 
-= 1.3 =
-Nada
-
 == Screenshots == 
 
 1. Configuracion para Argentina
@@ -57,6 +54,9 @@ Nada
 6. Lista de Sucursales de OCA
 
 == Changelog ==
+
+= 1.4 =
+* Agregada página de tracking
 
 = 1.3 =
 * Ya no es necesario reiniciar la caché de envío

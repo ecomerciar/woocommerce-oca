@@ -4,7 +4,7 @@
 Plugin Name: Woocommerce OCA
 Plugin URI: http://ecomerciar.com
 Description: Integración de oca para realizar envíos a través de la plataforma WooCommerce.
-Version: 1.2
+Version: 1.4
 Author: Ecomerciar
 Author URI: http://ecomerciar.com
 License: GPL2
@@ -31,6 +31,25 @@ function woo_oca_install(){
 		wp_insert_post( array(
 			'post_title'     => 'OCA Sucursales',
 			'post_name'      => 'oca-sucursales',
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'post_content'   => $contenido,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed'
+		) );
+	}
+
+	$contenido = '<h2>Número de envío</h2>
+	<form method="post">
+	<input type="text" name="id"style="width:40%"><br>
+	<br />
+	<input name="submit_button" type="submit"  value="Consultar"  id="update_button"  class="update_button"/>
+	</form>
+	[rastreo_oca]';
+	if(! post_exists('OCA Rastreo', $contenido)){
+		wp_insert_post( array(
+			'post_title'     => 'OCA Rastreo',
+			'post_name'      => 'oca_rastreo',
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
 			'post_content'   => $contenido,

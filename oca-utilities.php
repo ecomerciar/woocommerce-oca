@@ -13,63 +13,56 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_shortcode ( 'rastreo_oca' , 'woo_oca_rastreo_oca_func' );
 function woo_oca_rastreo_oca_func( $atts, $content= NULL) {
 	if($_POST['id']){
-		$post_data = [ "CodigoPostal" => intval($_POST['id']) ];
-		$url = 'http://webservice.oca.com.ar/epak_tracking/Oep_TrackEPak.asmx/GetCentrosImposicionConServiciosByCP';
-		$response = wp_remote_get( $url, array(
-				'method' => 'GET',
-				'timeout' => 45,
-				'redirection' => 5,
-				'httpversion' => '1.0',
-				'blocking' => true,
-				'headers' => array(),
-				'body' => $post_data,
-				'cookies' => array()
-			)
-		);
-		$response = $response['http_response']->get_response_object()->body;
+		$oca_id = filter_var ($_POST['id'], FILTER_SANITIZE_NUMBER_INT);
+		$_query_string = array(	'Pieza'					=> $oca_id,
+		'NroDocumentoCliente'	=> '',
+		'Cuit'					=> '',
+			);
+		$ch = curl_init();
+		$curl_opt_arr[CURLOPT_POST] 		= true;
+		$curl_opt_arr[CURLOPT_POSTFIELDS] 	= http_build_query($_query_string);
+		$curl_opt_arr[CURLOPT_RETURNTRANSFER] 	= true;
+		$curl_opt_arr[CURLOPT_HEADER] 	= false;
+		$curl_opt_arr[CURLOPT_URL] 			= "webservice.oca.com.ar/epak_tracking/Oep_TrackEPak.asmx/Tracking_Pieza";
+		curl_setopt_array($ch, $curl_opt_arr);
+		$res = curl_exec($ch);
 		$dom = new DOMDocument();
-		@$dom->loadXML($response);
-		$xpath = new DOMXpath($dom);
-	
-		$c_imp = array();
-		foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci)
+		@$dom->loadXML($res);
+		$xpath = new DOMXpath($dom);	
+		$envio = array();
+		foreach (@$xpath->query("//NewDataSet/Table") as $tp)
 		{
-			$c_imp[] = array(	'idCentroImposicion'	=> $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
-								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-								'Sigla'					=> $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
-								'Sucursal'				=> $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-								'Calle'					=> $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
-								'Numero'				=> $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
-								'Localidad'				=> $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
-								'Provincia'				=> $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
-								'Telefono'				=> $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
-								'CodigoPostal'			=> $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
-							);
+
+		$envio[] = array("NumeroEnvio"=>$tp->getElementsByTagName('NumeroEnvio')->item(0)->nodeValue,
+				"Descripcion_Motivo"=>$tp->getElementsByTagName('Descripcion_Motivo')->item(0)->nodeValue,
+				"Desdcripcion_Estado"=>$tp->getElementsByTagName('Desdcripcion_Estado')->item(0)->nodeValue,
+				"SUC"=>$tp->getElementsByTagName('SUC')->item(0)->nodeValue,
+				"fecha"=>$tp->getElementsByTagName('fecha')->item(0)->nodeValue,
+			);
 		}
+
 		ob_start();
-		echo '<table>';
-		echo '<tr>
-			<th>ID</th>
-			<th>Nombre</th>
-			<th>Calle</th>
-			<th>Número</th>
-			<th>Localidad</th>
-			<th>Teléfono</th>
-			<th>CP</th>
-		  </tr>';
-		foreach($c_imp as $centro){
-			echo '<tr>
-					<td>'.$centro['idCentroImposicion'].'</td>
-					<td>'.$centro['Sucursal'].'</td>
-					<td>'.$centro['Calle'].'</td>
-					<td>'.$centro['Numero'].'</td>
-					<td>'.$centro['Localidad'].'</td>
-					<td>'.$centro['Telefono'].'</td>
-					<td>'.$centro['CodigoPostal'].'</td>
-	  			</tr>';
-		}					
-		echo '</table>';
+		if($envio[0]['SUC']){
+			echo '<h3>Envío Nro: '.$envio[0]['NumeroEnvio'].'</h3>';
+			echo "<table>";
+			echo "<tr>";
+				echo "<td>Estado</td>";
+				echo "<td>".$envio[0]['Desdcripcion_Estado']."</td>";
+			echo "</tr>";
+			echo "<tr>";
+				echo "<td>Sucursal</td>";
+				echo "<td>".$envio[0]['SUC']."</td>";
+			echo "</tr>";
+			echo "<tr>";
+				echo "<td>Fecha</td>";
+				echo "<td>".$envio[0]['fecha']."</td>";
+			echo "</tr>";
+			echo "</table>";
+		}else{
+			wc_print_notice( __( 'Hubo un error, por favor intenta nuevamente', 'woocommerce' ), 'error' );
+		}
 		return ob_get_clean();
+		
 	}
 }
 
