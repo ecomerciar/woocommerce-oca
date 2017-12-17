@@ -14,7 +14,7 @@ WooCommerce OCA Envios
 
 == Descripcion ==
 
-Suma envios a traves de OCA a tu pagina de WooCommerce a traves de la API OCA E-Pak.
+Suma envios a traves de OCA a tu pagina de WooCommerce a traves de la API OCA E-Pak
 
 == Instalacion ==
 
