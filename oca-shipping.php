@@ -70,6 +70,8 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$datos['celular_cliente'] = $order->get_billing_phone();
 	$datos['email_cliente'] = $order->get_billing_email();
 	$datos['sucursal_oca_destino'] = $order->get_meta('sucursal_oca_destino');
+	$datos['valor_declarado'] = $order->get_meta('precio_envio_oca_'.$envio[1].'_'.$envio[3].'_contrareembolso');
+	$datos['valor_declarado'] = str_replace(',', "", $datos['valor_declarado']);
 
 	// Se filtran las comillas
 	$datos = array_map(function($value){
@@ -97,10 +99,10 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 						//Se obtienen los datos del producto
 						if($product->get_weight() !== ''){
 							$peso = $product->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$envio[4].'" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$datos['valor_declarado'].'" cant="1" />';           
 						}else{
 							$peso = $product_variado->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$envio[4].'" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$datos['valor_declarado'].'" cant="1" />';           
 						}
 					}
 					$xml .= '</paquetes>         

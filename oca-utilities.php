@@ -364,6 +364,30 @@ function woo_oca_save_extra_checkout_fields( $order, $data ){
     }
 }
 
+// =========================================================================
+/**
+ * Function woo_oca_guardar_precio_real
+ *
+ */
+function woo_oca_guardar_precio_real( $order_id ) {
+	$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+	$chosen_shipping = $chosen_methods[0]; 
+	$chosen_shipping = explode(" ",$chosen_shipping);
+	if(WC()->session->get('precio_oca_pas_'.$chosen_shipping[3].'_yes') !== ''){
+		update_post_meta( $order_id, 'precio_envio_oca_pas_'.$chosen_shipping[3].'_contrareembolso', WC()->session->get('precio_oca_pas_'.$chosen_shipping[3].'_yes') );
+	}
+	if(WC()->session->get('precio_oca_pap_'.$chosen_shipping[3].'_yes') !== ''){
+		update_post_meta( $order_id, 'precio_envio_oca_pap_'.$chosen_shipping[3].'_contrareembolso', WC()->session->get('precio_oca_pap_'.$chosen_shipping[3].'_yes') );
+	}
+	if(WC()->session->get('precio_oca_sas_'.$chosen_shipping[3].'_yes') !== ''){
+		update_post_meta( $order_id, 'precio_envio_oca_sas_'.$chosen_shipping[3].'_contrareembolso', WC()->session->get('precio_oca_sas_'.$chosen_shipping[3].'_yes') );
+	}
+	if(WC()->session->get('precio_oca_sap_'.$chosen_shipping[3].'_yes') !== ''){
+		update_post_meta( $order_id, 'precio_envio_oca_sap_'.$chosen_shipping[3].'_contrareembolso', WC()->session->get('precio_oca_sap_'.$chosen_shipping[3].'_yes') );
+	}
+}
+add_action('woocommerce_checkout_update_order_meta', 'woo_oca_guardar_precio_real');
+
 
 
 // =========================================================================
@@ -377,7 +401,7 @@ function woo_oca_agregar_boton_etiqueta_oca( $actions, $order ) {
 	$envio_seleccionado = reset( $order->get_items( 'shipping' ) )->get_method_id();	
     if ( $order->has_status( array( 'completed' ) ) && strpos($envio_seleccionado, 'oca') !== false ) {
         // Imprimimos el botón
-		printf( '<a class="button tips %s" href="%s" target="_blank" data-tip="%s">%s</a>', esc_attr( "view eti_oca" ), '../wp-content/plugins/woocommerce-oca/etiquetas/ver_eti.php?id='.$order->get_meta('ordenretiro_oca').'&nro='.$order->get_meta('numeroenvio_oca'), esc_attr( "Etiqueta" ), esc_attr( "Etiqueta" ) );
+		printf( '<a class="button tips %s" href="%s" target="_blank" data-tip="%s">%s</a>', esc_attr( "view eti_oca" ), plugin_dir_url( __FILE__ ).'etiquetas/ver_eti.php?id='.$order->get_meta('ordenretiro_oca').'&nro='.$order->get_meta('numeroenvio_oca'), esc_attr( "Etiqueta" ), esc_attr( "Etiqueta" ) );
 		
 	}
     return $actions;
@@ -448,11 +472,11 @@ function woo_oca_agregar_estilo_columna_oca() {
 
 // =========================================================================
 /**
- * Function clear_wc_shipping_rates_cache
+ * Function woo_oca_clear_wc_shipping_rates_cache
  *
  */
-add_filter('woocommerce_checkout_update_order_review', 'clear_wc_shipping_rates_cache');
-function clear_wc_shipping_rates_cache(){
+add_filter('woocommerce_checkout_update_order_review', 'woo_oca_clear_wc_shipping_rates_cache');
+function woo_oca_clear_wc_shipping_rates_cache(){
 	$packages = WC()->cart->get_shipping_packages();
 	foreach ($packages as $key => $value) {
 		$shipping_session = "shipping_for_package_$key";

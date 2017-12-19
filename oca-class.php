@@ -357,6 +357,13 @@ function woo_oca_envios_oca_init() {
 
 					$this->cargar_dependencias();
 					$medidas_totales = $this->calcular_medidas($productos);
+					if($medidas_totales['volumen'] === -1){
+						if($this->get_instance_option('debug') === 'yes'){
+							$log = new WC_Logger();		
+							$log->add( 'oca', "Medidas incorrectas, producto muy pequeño");						
+						}
+						return;
+					}
 					$operativas = $this->cargar_operativas();
 					foreach($operativas as $nombre_operativa => $cod_operativa){
 						$nombre = explode(" ", $nombre_operativa);
@@ -398,6 +405,7 @@ function woo_oca_envios_oca_init() {
 							}else{
 								$this->addRate('',0, $nombre.' (Pago a destino - $'.$precio.')', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');
 							}
+							WC()->session->set('precio_oca_'.$tipo_operativa.'_'.$operativa_seleccionada.'_'.$contrareembolso, $precio);								
 						}else{
 							$this->addRate('',$tarifa[0]['Total'], $nombre, $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'no');
 						}
@@ -547,6 +555,10 @@ function woo_oca_envios_oca_init() {
 				}
 				$res['volumen'] = $largo * $ancho * $alto;
 				
+				$res['peso'] = number_format($res['peso'], 2);
+				if($res['volumen'] < 0.01 ){
+					$res['volumen'] = -1;
+				}
 				return $res;				
 			}
 
@@ -587,7 +599,7 @@ function woo_oca_envios_oca_init() {
 				}else if($precio !== ''){
 				
 					$rate = array(
-						'id' => "oca ".$tipo_op." ".$this->get_instance_option_key()." ".$operativa." ".$precio_declarado." ".$cr,
+						'id' => "oca ".$tipo_op." ".$this->get_instance_option_key()." ".$operativa." ".$cr,
 						'label' => $nombre,
 						'cost' => $precio,
 						'calc_tax' => 'per_item'
