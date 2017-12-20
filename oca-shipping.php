@@ -88,6 +88,8 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$datos = array_map(function($value){
 		$value = str_replace('"', "", $value);
 		$value = str_replace("'", "", $value);
+		$value = str_replace("<", "", $value);
+		$value = str_replace(">", "", $value);
 		return $value;
 	}, $datos);
 

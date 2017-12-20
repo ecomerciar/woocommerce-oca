@@ -564,7 +564,7 @@ function woo_oca_envios_oca_init() {
 				$res['volumen'] = $largo * $ancho * $alto;
 				
 				$res['peso'] = number_format($res['peso'], 2);
-				if($res['volumen'] < 0.01 ){
+				if($res['volumen'] < 0.000001 ){
 					$res['volumen'] = -1;
 				}
 				return $res;				
