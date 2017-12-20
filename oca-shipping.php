@@ -22,17 +22,25 @@ function woo_oca_generar_envio_oca( $order_id ){
 		$oca = new Oca($datos['cuit'], $datos[$envio[3]]);
 		if($datos['debug'] === 'yes'){
 			$log = new WC_Logger();		
+			$log->add( 'oca', '=== Ingresando el envío en el sistema de OCA ===');						
 			$log->add( 'oca', $xml);						
 		}
 		$data = $oca->ingresoORMultiplesRetiros($datos['username'], $datos['password'], $xml, true);
-		$numeroenvio = $data['detalleIngresos'][0]['NumeroEnvio'];
-		$ordenretiro = $data['detalleIngresos'][0]['OrdenRetiro'];
-		$order->update_meta_data('numeroenvio_oca', $numeroenvio );
-		$order->update_meta_data('ordenretiro_oca', $ordenretiro );
-		$order->save();
-		if($datos['debug'] === 'yes'){
-			$log = new WC_Logger();							
-			$log->add( 'oca', print_r($tracking,true));
+		if(! isset($data[0]['error'])){
+			$numeroenvio = $data[0]['NumeroEnvio'];
+			$ordenretiro = $data[0]['OrdenRetiro'];
+			$order->update_meta_data('numeroenvio_oca', $numeroenvio );
+			$order->update_meta_data('ordenretiro_oca', $ordenretiro );
+			$order->save();
+			if($datos['debug'] === 'yes'){
+				$log = new WC_Logger();							
+				$log->add( 'oca', print_r($tracking,true));
+			}
+		}else{
+			if($datos['debug'] === 'yes'){
+				$log = new WC_Logger();							
+				$log->add( 'oca', 'Error al realizar envío: '.$data[0]['error']);
+			}
 		}
 	}
 }
@@ -70,6 +78,9 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$datos['celular_cliente'] = $order->get_billing_phone();
 	$datos['email_cliente'] = $order->get_billing_email();
 	$datos['sucursal_oca_destino'] = $order->get_meta('sucursal_oca_destino');
+	if($datos['sucursal_oca_destino'] == ''){
+		$datos['sucursal_oca_destino'] = 0;
+	}
 	$datos['valor_declarado'] = $order->get_meta('precio_envio_oca_'.$envio[1].'_'.$envio[3].'_contrareembolso');
 	$datos['valor_declarado'] = str_replace(',', "", $datos['valor_declarado']);
 

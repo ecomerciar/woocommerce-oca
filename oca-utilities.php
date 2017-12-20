@@ -33,7 +33,7 @@ function woo_oca_rastreo_oca_func( $atts, $content= NULL) {
 		foreach (@$xpath->query("//NewDataSet/Table") as $tp)
 		{
 
-		$envio[] = array("NumeroEnvio"=>$tp->getElementsByTagName('NumeroEnvio')->item(0)->nodeValue,
+			$envio[] = array("NumeroEnvio"=>$tp->getElementsByTagName('NumeroEnvio')->item(0)->nodeValue,
 				"Descripcion_Motivo"=>$tp->getElementsByTagName('Descripcion_Motivo')->item(0)->nodeValue,
 				"Desdcripcion_Estado"=>$tp->getElementsByTagName('Desdcripcion_Estado')->item(0)->nodeValue,
 				"SUC"=>$tp->getElementsByTagName('SUC')->item(0)->nodeValue,
@@ -42,7 +42,7 @@ function woo_oca_rastreo_oca_func( $atts, $content= NULL) {
 		}
 
 		ob_start();
-		if($envio[0]['SUC']){
+		if(isset($envio[0]['SUC'])){
 			echo '<h3>Envío Nro: '.$envio[0]['NumeroEnvio'].'</h3>';
 			echo "<table>";
 			echo "<tr>";
@@ -194,7 +194,7 @@ function woo_oca_check_if_oca_selected( $chosen_method ) {
 	?><script>
 		jQuery("#sucursal_oca_destino_field").hide();
 		function cambiar_suc(val){
-			if(val !== '0'){
+			if(val !== '-1'){
 					var id = val.split("|")[0];
 					var cp = val.split("|")[1];
 					jQuery("#sucursal_oca_destino").val(id);
@@ -224,6 +224,11 @@ function woo_oca_check_if_oca_selected( $chosen_method ) {
 	</script>
 <?php
 	if ($chosen_shipping[0] === 'oca' && ($chosen_shipping[1] === 'pas' || $chosen_shipping[1] === 'sas')) {
+		echo "<script>
+					if(jQuery('#sucursal_oca_destino').val() === '-1'){
+						jQuery('#sucursal_oca_destino').val('');
+					}
+		</script>";
 		echo "<h4>Selecciona la sucursal de OCA donde quieres recibir tu compra</h4>";
 		$centros = woo_oca_obtener_centros_oca(WC()->customer->get_shipping_postcode(), $chosen_shipping[5] );
 		echo '<select id="SucursalesOcaDestino" style="margin-bottom:15px" onchange="cambiar_suc(this.value)" >';
@@ -236,7 +241,7 @@ function woo_oca_check_if_oca_selected( $chosen_method ) {
 			echo "<script>jQuery('#SucursalesOcaDestino').val(\"".WC()->session->get('id_destino_sucursal_oca')."\")</script>";
 		}
 	}else{
-		echo "<script>cambiar_suc('0')</script>";
+		echo "<script>cambiar_suc('-1')</script>";
 	}
 }
 
@@ -302,67 +307,45 @@ function woo_oca_obtener_centros_oca($cp, $contrareembolso){
 	
 }
 
-
-// =========================================================================
-/**
- * Function woo_oca_filter_checkout_fields
- *
- */
-add_filter( 'woocommerce_checkout_fields', 'woo_oca_filter_checkout_fields' );
-function woo_oca_filter_checkout_fields($fields){
-    $fields['oca'] = array(
-            'sucursal_oca_destino' => array(
-                'type' => 'text',
-                'required'      => true,
-				'label' => __( 'Sucursal OCA' ),
-				'class'      => array('form-row-wide'),
-				'default' => ''	
-			),
-			);
-	
+add_action( 'woocommerce_after_checkout_billing_form', 'woo_oca_checkout_field' );	
+function woo_oca_checkout_field( $checkout ) {
 	$id = WC()->session->get('id_destino_sucursal_oca');
 	if($id !== ''){
-		$fields['oca']['sucursal_oca_destino']['default'] = explode("|",$id)[0];
+		woocommerce_form_field( 'sucursal_oca_destino', array(
+			'type'          => 'text',
+			'class'         => array('form-row-first'),
+			'label'         => __('Sucursal OCA'),
+			'default' => explode("|",$id)[0],
+			'required'      => true,			
+			), $checkout->get_value( 'sucursal_oca_destino' ));
+	}else{
+		woocommerce_form_field( 'sucursal_oca_destino', array(
+			'type'          => 'text',
+			'class'         => array('form-row-first'),
+			'label'         => __('Sucursal OCA'),
+			'required'      => true,			
+			), $checkout->get_value( 'sucursal_oca_destino' ));
 	}
-
-    return $fields;
+	
 }
 
+add_action( 'woocommerce_checkout_process', 'woo_oca_checkout_field_process');
+function woo_oca_checkout_field_process() {
+    // Check if set, if its not set add an error.
+    if ( ! $_POST['sucursal_oca_destino'] )
+        wc_add_notice( __( 'Por favor elige una sucursal de OCA' ), 'error' );
+}
 
-// =========================================================================
-/**
- * Function oca_extra_checkout_fields
- *
- */
-add_action( 'woocommerce_checkout_after_customer_details' ,'woo_oca_extra_checkout_fields' );
-function woo_oca_extra_checkout_fields(){ 
-		$checkout = WC()->checkout(); 
-		// because of this foreach, everything added to the array in the previous function will display automagically
-		foreach ( $checkout->checkout_fields['oca'] as $key => $field ) : ?>
-	
-				<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
-	
-			<?php endforeach; ?>
-	
-<?php }
-
-
-
-// =========================================================================
-/**
- * Function oca_save_extra_checkout_fields
- *
- */
-// save the extra field when checkout is processed
-add_action( 'woocommerce_checkout_create_order', 'woo_oca_save_extra_checkout_fields', 10, 2 );
-function woo_oca_save_extra_checkout_fields( $order, $data ){
- 
-    // don't forget appropriate sanitization if you are using a different field type
-    if( isset( $data['sucursal_oca_destino'] ) ) {
-		$order->update_meta_data( 'sucursal_oca_destino', $data['sucursal_oca_destino'] );
-		$order->save();		
+add_action( 'woocommerce_checkout_update_order_meta', 'woo_oca_checkout_field_update_order_meta' );
+function woo_oca_checkout_field_update_order_meta( $order_id ) {
+    if ( ! empty( $_POST['sucursal_oca_destino'] ) ) {
+		$data = filter_var ( $_POST['sucursal_oca_destino'], FILTER_SANITIZE_NUMBER_INT);
+		if($data != -1){
+			update_post_meta( $order_id, 'sucursal_oca_destino',  $data );
+		}
     }
 }
+
 
 // =========================================================================
 /**

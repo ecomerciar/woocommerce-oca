@@ -318,7 +318,11 @@ function woo_oca_envios_oca_init() {
 			 * @return void
 			 */
 			public function calculate_shipping( $package = array() ) {
-				$productos = array();				
+				$productos = array();
+				if($this->get_instance_option('debug') === 'yes'){
+					$log = new WC_Logger();		
+					$log->add( 'oca', " ====== Inicio de cálculo de precio ======");						
+				}
 				$envio_gratis = $this->get_instance_option('envio_general_gratis');
 				$accion = $this->verificar_clases($productos);
 
@@ -398,19 +402,23 @@ function woo_oca_envios_oca_init() {
 								$log->add( 'oca', "Se toma el CP del usuario: ".$cp." Y calculamos el precio: ".print_r($tarifa,true));						
 							}
 						}
-						if($contrareembolso === 'yes'){
-							$precio = number_format($tarifa[0]['Total'], 2);
-							if($precio == 0){
-								$this->addRate('',0, $nombre.' (Pago a destino)', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');								
+						if(! isset($tarifa[0]['error'])){
+							if($contrareembolso === 'yes'){
+								$precio = number_format($tarifa[0]['Total'], 2);
+								if($precio == 0){
+									$this->addRate('',0, $nombre.' (Pago a destino)', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');								
+								}else{
+									$this->addRate('',0, $nombre.' (Pago a destino - $'.$precio.')', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');
+								}
+								WC()->session->set('precio_oca_'.$tipo_operativa.'_'.$operativa_seleccionada.'_'.$contrareembolso, $precio);								
 							}else{
-								$this->addRate('',0, $nombre.' (Pago a destino - $'.$precio.')', $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'yes');
+								$this->addRate('',$tarifa[0]['Total'], $nombre, $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'no');
 							}
-							WC()->session->set('precio_oca_'.$tipo_operativa.'_'.$operativa_seleccionada.'_'.$contrareembolso, $precio);								
-						}else{
-							$this->addRate('',$tarifa[0]['Total'], $nombre, $operativa_seleccionada, $tipo_operativa, $tarifa[0]['Total'], 'no');
+						}else if($this->get_instance_option('debug') === 'yes'){
+							$log = new WC_Logger();		
+							$log->add( 'oca', "Hubo un error al calcular el precio del envío: ".$tarifa[0]['error']);	
 						}
 					}
-
 				}
 			}
 
