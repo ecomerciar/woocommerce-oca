@@ -5,7 +5,7 @@ Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 Language: Spanish
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -52,6 +52,9 @@ Reiniciar Cache de Envios
 6. Lista de Sucursales de OCA
 
 == Changelog ==
+
+= 1.6.2 =
+* Agregados filtros adicionales para remover caracteres especiales antes de ingresar un envio
 
 = 1.6.1 =
 * Expansión de medida minima permitida para los envios

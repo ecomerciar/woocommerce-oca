@@ -45,8 +45,6 @@ function woo_oca_generar_envio_oca( $order_id ){
 	}
 }
 
-
-
 // =========================================================================
 /**
  * Function crear_datos_oca
@@ -84,12 +82,20 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	$datos['valor_declarado'] = $order->get_meta('precio_envio_oca_'.$envio[1].'_'.$envio[3].'_contrareembolso');
 	$datos['valor_declarado'] = str_replace(',', "", $datos['valor_declarado']);
 
+	if(html_entity_decode($datos['provincia_cliente']) == 'Tucumán'){
+		$datos['provincia_cliente'] = 'Tucumán';
+	}
+
 	// Se filtran las comillas
 	$datos = array_map(function($value){
 		$value = str_replace('"', "", $value);
 		$value = str_replace("'", "", $value);
+		$value = str_replace(";", "", $value);
+		$value = str_replace("&", "", $value);
 		$value = str_replace("<", "", $value);
 		$value = str_replace(">", "", $value);
+		$value = str_replace("º", "", $value);
+		$value = str_replace("ª", "", $value);
 		return $value;
 	}, $datos);
 
