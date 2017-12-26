@@ -53,6 +53,9 @@ Reiniciar Cache de Envios
 
 == Changelog ==
 
+= 1.6.3 =
+* Arreglado bug en el precio y cantidad a la hora de generar un envío
+
 = 1.6.2 =
 * Agregados filtros adicionales para remover caracteres especiales antes de ingresar un envio
 
