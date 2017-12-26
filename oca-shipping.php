@@ -86,7 +86,7 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 		$datos['provincia_cliente'] = 'Tucumán';
 	}
 
-	// Se filtran las comillas
+	// Se filtran los caracteres
 	$datos = array_map(function($value){
 		$value = str_replace('"', "", $value);
 		$value = str_replace("'", "", $value);
@@ -109,7 +109,7 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 					$xml .= '<destinatario apellido="'.$datos['apellido_cliente'].'" nombre="'.$datos['nombre_cliente'].'" calle="'.$datos['direccion_cliente'].'" nro="0" piso="" depto="" localidad="'.$datos['ciudad_cliente'].'" provincia="'.$datos['provincia_cliente'].'" cp="'.$datos['cp_cliente'].'" telefono="'.$datos['telefono_cliente'].'" email="'.$datos['email_cliente'].'" idci="'.$datos['sucursal_oca_destino'].'" celular="'.$datos['celular_cliente'].'" observaciones="'.$datos['observaciones_cliente'].'" />';
 					$xml .= '<paquetes>';
 					$items = $order->get_items();
-					foreach ( $items as $item ) {
+					foreach ( $items as $item) {
 						$product_name = $item['name'];
 						$product_id = $item['product_id'];
 						$product_variation_id = $item['variation_id'];
@@ -118,10 +118,10 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 						//Se obtienen los datos del producto
 						if($product->get_weight() !== ''){
 							$peso = $product->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$datos['valor_declarado'].'" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product->get_height(), 'm').'" ancho="'.wc_get_dimension( $product->get_width(), 'm').'" largo="'.wc_get_dimension( $product->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$item->get_total().'" cant="'.$item->get_quantity().'" />';           
 						}else{
 							$peso = $product_variado->get_weight();
-							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$datos['valor_declarado'].'" cant="1" />';           
+							$xml .= '<paquete alto="'.wc_get_dimension( $product_variado->get_height(), 'm').'" ancho="'.wc_get_dimension( $product_variado->get_width(), 'm').'" largo="'.wc_get_dimension( $product_variado->get_length(), 'm').'" peso="'.wc_get_weight( $peso , 'kg' ).'" valor="'.$item->get_total().'" cant="'.$item->get_quantity().'" />';           
 						}
 					}
 					$xml .= '</paquetes>         
