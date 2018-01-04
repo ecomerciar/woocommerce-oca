@@ -34,7 +34,8 @@ function woo_oca_generar_envio_oca( $order_id ){
 			$order->save();
 			if($datos['debug'] === 'yes'){
 				$log = new WC_Logger();							
-				$log->add( 'oca', print_r($tracking,true));
+				$log->add( 'oca', 'Envío Realizado con exito: ');
+				$log->add( 'oca', 'Nro. Envio: '.$numeroenvio.' | Orden retiro: '.$ordenretiro);
 			}
 		}else{
 			if($datos['debug'] === 'yes'){
@@ -99,11 +100,17 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 		return $value;
 	}, $datos);
 
+	if($envio[1] == 'pap' || $envio[1] == 'pas'){
+		$centro_imposicion = '';
+	}else{
+		$centro_imposicion = 'idcentroimposicionorigen="'.$datos['idcentroimposicionorigen'].'" ';
+	}
+
 	$xml = '<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
 	<ROWS>   
 		<cabecera ver="2.0" nrocuenta="'.$datos['nrocuenta'].'" />   
 		<origenes>     
-			<origen calle="'.$datos['calle'].'" nro="'.$datos['nro'].'" piso="'.$datos['piso'].'" depto="'.$datos['depto'].'" cp="'.$datos['cp'].'" localidad="'.$datos['localidad'].'" provincia="'.$datos['provincia'].'" contacto="" email="'.$datos['email'].'" solicitante="" observaciones="" centrocosto="1" idfranjahoraria="'.$datos['idfranjahoraria'].'" idcentroimposicionorigen="'.$datos['idcentroimposicionorigen'].'" fecha="'.current_time('Ymd').'">       
+			<origen calle="'.$datos['calle'].'" nro="'.$datos['nro'].'" piso="'.$datos['piso'].'" depto="'.$datos['depto'].'" cp="'.$datos['cp'].'" localidad="'.$datos['localidad'].'" provincia="'.$datos['provincia'].'" contacto="" email="'.$datos['email'].'" solicitante="" observaciones="" centrocosto="1" idfranjahoraria="'.$datos['idfranjahoraria'].'" '.$centro_imposicion.'fecha="'.current_time('Ymd').'">       
 				<envios>         
 					<envio idoperativa="'.$datos[$envio[3]].'" nroremito="'.$order->get_order_number().'">';
 					$xml .= '<destinatario apellido="'.$datos['apellido_cliente'].'" nombre="'.$datos['nombre_cliente'].'" calle="'.$datos['direccion_cliente'].'" nro="0" piso="" depto="" localidad="'.$datos['ciudad_cliente'].'" provincia="'.$datos['provincia_cliente'].'" cp="'.$datos['cp_cliente'].'" telefono="'.$datos['telefono_cliente'].'" email="'.$datos['email_cliente'].'" idci="'.$datos['sucursal_oca_destino'].'" celular="'.$datos['celular_cliente'].'" observaciones="'.$datos['observaciones_cliente'].'" />';
