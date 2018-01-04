@@ -110,7 +110,7 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $envio = ''){
 	<ROWS>   
 		<cabecera ver="2.0" nrocuenta="'.$datos['nrocuenta'].'" />   
 		<origenes>     
-			<origen calle="'.$datos['calle'].'" nro="'.$datos['nro'].'" piso="'.$datos['piso'].'" depto="'.$datos['depto'].'" cp="'.$datos['cp'].'" localidad="'.$datos['localidad'].'" provincia="'.$datos['provincia'].'" contacto="" email="'.$datos['email'].'" solicitante="" observaciones="" centrocosto="1" idfranjahoraria="'.$datos['idfranjahoraria'].'" '.$centro_imposicion.'fecha="'.current_time('Ymd').'">       
+			<origen calle="'.$datos['calle'].'" nro="'.$datos['nro'].'" piso="'.$datos['piso'].'" depto="'.$datos['depto'].'" cp="'.$datos['cp'].'" localidad="'.$datos['localidad'].'" provincia="'.$datos['provincia'].'" contacto="'.$datos['nombre'].'" email="'.$datos['email'].'" solicitante="'.$datos['nombre_empresa'].'" observaciones="" centrocosto="1" idfranjahoraria="'.$datos['idfranjahoraria'].'" '.$centro_imposicion.'fecha="'.current_time('Ymd').'">       
 				<envios>         
 					<envio idoperativa="'.$datos[$envio[3]].'" nroremito="'.$order->get_order_number().'">';
 					$xml .= '<destinatario apellido="'.$datos['apellido_cliente'].'" nombre="'.$datos['nombre_cliente'].'" calle="'.$datos['direccion_cliente'].'" nro="0" piso="" depto="" localidad="'.$datos['ciudad_cliente'].'" provincia="'.$datos['provincia_cliente'].'" cp="'.$datos['cp_cliente'].'" telefono="'.$datos['telefono_cliente'].'" email="'.$datos['email_cliente'].'" idci="'.$datos['sucursal_oca_destino'].'" celular="'.$datos['celular_cliente'].'" observaciones="'.$datos['observaciones_cliente'].'" />';

@@ -54,7 +54,17 @@ function woo_oca_envios_oca_init() {
 							'title' => __( 'Número de cuenta', 'woocommerce' ),
 							'default'     => '',
                             'type' => 'text'
-                    ),
+					),
+					'nombre' => array(
+						'title' => __( 'Nombre de contacto', 'woocommerce' ),
+						'default'     => '',
+						'type' => 'text'
+					),
+					'nombre_empresa' => array(
+							'title' => __( 'Nombre empresa', 'woocommerce' ),
+							'default'     => '',
+							'type' => 'text'
+					),
                     'calle' => array(
 							'title' => __( 'Calle', 'woocommerce' ),
 							'default'     => '',
