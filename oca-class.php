@@ -378,6 +378,7 @@ function woo_oca_envios_oca_init() {
 						}
 						return;
 					}
+					$precio_total = $this->get_precio_total($productos);
 					$operativas = $this->cargar_operativas();
 					foreach($operativas as $nombre_operativa => $cod_operativa){
 						$nombre = explode(" ", $nombre_operativa);
@@ -395,7 +396,7 @@ function woo_oca_envios_oca_init() {
 								$log = new WC_Logger();		
 								$log->add( 'oca', "Hay CP en la sesion: ".WC()->session->get('cp_sucursal_oca')." Y el tipo de operativa es: ".$tipo_operativa);						
 							}
-							$tarifa = $oca->tarifarEnvioCorporativo($medidas_totales['peso'], $medidas_totales['volumen'], $this->get_instance_option('cp'), WC()->session->get('cp_sucursal_oca'), count($productos), 0);					
+							$tarifa = $oca->tarifarEnvioCorporativo($medidas_totales['peso'], $medidas_totales['volumen'], $this->get_instance_option('cp'), WC()->session->get('cp_sucursal_oca'), count($productos), $precio_total);					
 						}else if($tipo_operativa == 'pas' || $tipo_operativa == 'sas'){
 							$tarifa[0] = array(
 								'Total' => 0
@@ -406,7 +407,7 @@ function woo_oca_envios_oca_init() {
 							}
 						}else{
 							$cp = preg_replace( '/[^0-9]/', '', WC()->customer->get_shipping_postcode() );
-							$tarifa = $oca->tarifarEnvioCorporativo($medidas_totales['peso'], $medidas_totales['volumen'], $this->get_instance_option('cp'), $cp, count($productos), 0);					
+							$tarifa = $oca->tarifarEnvioCorporativo($medidas_totales['peso'], $medidas_totales['volumen'], $this->get_instance_option('cp'), $cp, count($productos), $precio_total);					
 							if($this->get_instance_option('debug') === 'yes'){
 								$log = new WC_Logger();		
 								$log->add( 'oca', "Se toma el CP del usuario: ".$cp." Y calculamos el precio: ".print_r($tarifa,true));						
@@ -466,7 +467,8 @@ function woo_oca_envios_oca_init() {
 								"peso" => floatval(wc_get_dimension( $this->fix_format( $peso ), 'kg' )),
 								"largo" => floatval(wc_get_dimension( $this->fix_format( $product->get_length() ), 'm' )),
 								"ancho" => floatval(wc_get_dimension( $this->fix_format( $product->get_width() ), 'm' )),
-								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->get_height() ), 'm' ))
+								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->get_height() ), 'm' )),
+								"precio" => $product->get_price()
 							);
 						} else {
 							$peso = $product->weight;
@@ -477,7 +479,8 @@ function woo_oca_envios_oca_init() {
 								"peso" => floatval(wc_get_dimension( $this->fix_format( $peso ), 'kg' )),
 								"largo" => floatval(wc_get_dimension( $this->fix_format( $product->length ), 'm' )),
 								"ancho" => floatval(wc_get_dimension( $this->fix_format( $product->width ), 'm' )),
-								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->height ), 'm' ))
+								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->height ), 'm' )),
+								"precio" => $product->price
 							);
 						}
 						for ($x = 0; $x < $values['quantity']; $x++) {
@@ -501,7 +504,8 @@ function woo_oca_envios_oca_init() {
 								"peso" => floatval(wc_get_weight( $this->fix_format( $peso ), 'kg' )),
 								"largo" => floatval(wc_get_dimension( $this->fix_format( $product->get_length() ), 'm' )),
 								"ancho" => floatval(wc_get_dimension( $this->fix_format( $product->get_width() ), 'm' )),
-								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->get_height() ), 'm' ))
+								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->get_height() ), 'm' )),
+								"precio" => $product->get_price()
 							);
 						} else {
 							$peso = $product->weight;
@@ -512,7 +516,8 @@ function woo_oca_envios_oca_init() {
 								"peso" => floatval(wc_get_weight( $this->fix_format( $peso ), 'kg' )),
 								"largo" => floatval(wc_get_dimension( $this->fix_format( $product->length ), 'm' )),
 								"ancho" => floatval(wc_get_dimension( $this->fix_format( $product->width ), 'm' )),
-								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->height ), 'm' ))
+								"alto" => floatval(wc_get_dimension( $this->fix_format( $product->height ), 'm' )),
+								"precio" => $product->price
 							);
 						}
 					
@@ -553,6 +558,24 @@ function woo_oca_envios_oca_init() {
 
 
 			
+			// =========================================================================
+			/**
+			 * function get_precio_total
+			 *
+			 * @access private
+			 * @return float
+			 */
+			private function get_precio_total($productos){
+				$precio = 0;
+				foreach($productos as $producto){						
+					$precio += $producto['precio'];
+				}
+				return $precio;				
+			}
+
+
+
+
 			// =========================================================================
 			/**
 			 * function calcular_medidas
