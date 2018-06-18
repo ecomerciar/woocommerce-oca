@@ -5,7 +5,7 @@ Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 2.0
+Stable tag: 2.0.1
 Language: Spanish
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -30,6 +30,7 @@ El CUIT se ingresa en formato XX-XXXXXXXX-X
 = Como encuentro mi sucursal de origen? =
 
 En la configuracion del plugin hay un link donde podes hacer click y buscar a traves de tu codigo postal tu sucursal de origen mas cercana.
+Al hacerlo obtendrás una lista de sucursales, recuerda que debes colocar solo el ID de la sucursal, sin letras.
 
 == Upgrade Notice ==
 
@@ -52,6 +53,10 @@ Reiniciar Cache de Envios
 6. Lista de Sucursales de OCA
 
 == Changelog ==
+
+= 2.0.1 =
+* Hotfix: Arreglado display de sucursales durante el checkout
+* Hotfix: Removida variable de testing al ingresar un envío
 
 = 2.0 =
 * Añadido soporte para Woocommerce 3.4

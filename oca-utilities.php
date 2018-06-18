@@ -249,16 +249,13 @@ function woo_oca_check_if_oca_selected($chosen_method)
 		echo '<option value="">Seleccionar</option>';
 		foreach ($centros as $centro) {
 			echo '<option value="' . $centro['idCentroImposicion'] . "|" . $centro['CodigoPostal'] . '">' . $centro['Sucursal'] . ' / ' . $centro['Calle'] . ' ' . $centro['Numero'] . '</option>';
-
-			echo '</select>';
 			if (WC()->session->get('id_destino_sucursal_oca') !== '') {
 				echo "<script>jQuery('#SucursalesOcaDestino').val(\"" . WC()->session->get('id_destino_sucursal_oca') . "\")</script>";
-
 			} else {
 				echo "<script>cambiar_suc('-1')</script>";
-
 			}
 		}
+		echo '</select>';
 	}
 }
 

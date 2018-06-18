@@ -25,7 +25,7 @@ function woo_oca_generar_envio_oca($order_id)
 		$oca = new Oca($datos['cuit'], $operativa['code']);
 		$logger->debug('=== Ingresando el envío en el sistema de OCA ===', unserialize(OCA_LOGGER_CONTEXT));
 		$logger->debug($xml, unserialize(OCA_LOGGER_CONTEXT));
-		$data = $oca->ingresoORMultiplesRetiros($datos['username'], $datos['password'], $xml, false);
+		$data = $oca->ingresoORMultiplesRetiros($datos['username'], $datos['password'], $xml, true);
 		if (!isset($data[0]['error'])) {
 			$numeroenvio = $data[0]['NumeroEnvio'];
 			$ordenretiro = $data[0]['OrdenRetiro'];
