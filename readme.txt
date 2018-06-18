@@ -5,14 +5,14 @@ Tags: oca, shipping, woocommerce, argentina, envios, oca e-pak, spam
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.6
-Stable tag: 1.7.2
+Stable tag: 2.0
 Language: Spanish
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Suma envios a traves de OCA a tu pagina de WooCommerce a traves de la API OCA E-Pak
+Suma envios a traves de OCA a tu tienda de WooCommerce a traves de la API OCA E-Pak
 
 == Instalation ==
 
@@ -53,35 +53,45 @@ Reiniciar Cache de Envios
 
 == Changelog ==
 
+= 2.0 =
+* A帽adido soporte para Woocommerce 3.4
+* Agregada p谩gina de configuraci贸n (Ajustes -> Configuraci贸n de OCA)
+* Agregada posibilidad de sumar operativas ilimitadas
+* Agregado link de configuraci贸n en la p谩gina de plugins
+* Arreglado bug sobre dimensiones de producto
+* Arreglado bot贸n de ver etiqueta en el panel de ordenes
+* C贸digo optimizado
+* Los logs ahora ser谩n m谩s descriptivos y contendr谩n solo informaci贸n necesaria
+
 = 1.7.2 =
-* Arreglado bug donde los env韔s asegurados no calculaban su precio correctamente
+* Arreglado bug donde los env铆os asegurados no calculaban su precio correctamente
 
 = 1.7.1 =
-* Agregados campos extra de contacto en la configuraci髇 del plugin
+* Agregados campos extra de contacto en la configuraci贸n del plugin
 
 = 1.7 =
-* Corregido bug en env韔s Puerta a Puerta y Puerta a Sucursal
+* Corregido bug en env铆os Puerta a Puerta y Puerta a Sucursal
 * Agregadas lineas al debug log
 
 = 1.6.3 =
-* Arreglado bug en el precio y cantidad a la hora de generar un env韔
+* Arreglado bug en el precio y cantidad a la hora de generar un env铆o
 
 = 1.6.2 =
 * Agregados filtros adicionales para remover caracteres especiales antes de ingresar un envio
 
 = 1.6.1 =
-* Expansi髇 de medida minima permitida para los envios
+* Expansi贸n de medida minima permitida para los envios
 
 = 1.6 =
 * Corregido bug que permitia finalizar compra sin seleccionar una sucursal
-* Optimizaci髇 de c骴igo en el SDK
+* Optimizaci贸n de c贸digo en el SDK
 * Corregido bug al ver las etiquetas
-* Corregido bug cuando OCA devolv韆 un error al generar un env韔
+* Corregido bug cuando OCA devolv铆a un error al generar un env铆o
 
 = 1.5 =
 * Corregido bug en el form checkout
 * Corregido bug para las operativas con contrareembolso
-* Ahora el m閠odo de envio desaparece cuando las dimensiones de alg鷑 producto son muy peque馻s
+* Ahora el m茅todo de envio desaparece cuando las dimensiones de alg煤n producto son muy peque帽as
 
 = 1.4 =
 * Agregada pagina de tracking
