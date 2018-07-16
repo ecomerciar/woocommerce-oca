@@ -54,6 +54,9 @@ Reiniciar Cache de Envios
 
 == Changelog ==
 
+= 2.0.2 =
+* Hotfix: Removidas variables de debug
+
 = 2.0.1 =
 * Hotfix: Arreglado display de sucursales durante el checkout
 * Hotfix: Removida variable de testing al ingresar un envío
