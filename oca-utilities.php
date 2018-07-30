@@ -303,18 +303,21 @@ function woo_oca_obtener_centros_oca($cp, $contrareembolso)
 		}
 	} else {
 		foreach (@$xpath->query("//CentrosDeImposicion/Centro") as $ci) {
-			$c_imp[] = array(
-				'idCentroImposicion' => $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
-				'Sucursal' => $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-				'Sigla' => $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
-				'Sucursal' => $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
-				'Calle' => $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
-				'Numero' => $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
-				'Localidad' => $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
-				'Provincia' => $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
-				'Telefono' => $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
-				'CodigoPostal' => $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
-			);
+			$servicios_ci = $ci->getElementsByTagName('Servicios')->item(0)->nodeValue;
+			if ( strpos($servicios_ci, 'Entrega de paquetes') !== false ) {
+				$c_imp[] = array(
+					'idCentroImposicion' => $ci->getElementsByTagName('IdCentroImposicion')->item(0)->nodeValue,
+					'Sucursal' => $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+					'Sigla' => $ci->getElementsByTagName('Sigla')->item(0)->nodeValue,
+					'Sucursal' => $ci->getElementsByTagName('Sucursal')->item(0)->nodeValue,
+					'Calle' => $ci->getElementsByTagName('Calle')->item(0)->nodeValue,
+					'Numero' => $ci->getElementsByTagName('Numero')->item(0)->nodeValue,
+					'Localidad' => $ci->getElementsByTagName('Localidad')->item(0)->nodeValue,
+					'Provincia' => $ci->getElementsByTagName('Provincia')->item(0)->nodeValue,
+					'Telefono' => $ci->getElementsByTagName('Telefono')->item(0)->nodeValue,
+					'CodigoPostal' => $ci->getElementsByTagName('CodigoPostal')->item(0)->nodeValue
+				);
+			}
 		}
 	}
 	return $c_imp;
