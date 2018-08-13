@@ -222,10 +222,12 @@ function woo_oca_envios_oca_init()
 					} else {
 						$condition = true;
 						foreach ($products as $item) {
-							$product = wc_get_product($item['id']);
-							if ($class !== $product->get_shipping_class()) {
-								$condition = false;
-								$break;
+							$product = wc_get_product($item['product_id']);
+							if($product) {
+								if ($class !== $product->get_shipping_class()) {
+									$condition = false;
+									$break;
+								}
 							}
 						}
 					}
