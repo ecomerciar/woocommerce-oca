@@ -230,10 +230,6 @@ function woo_oca_check_if_oca_selected($chosen_method)
 		}
 	</script>
 	<?php
-	if (!isset($chosen_shipping[1])) {
-		echo "<script>cambiar_suc('-1')</script>";
-		return;
-	}
 	$operativa = $chosen_shipping[1];
 	$operativa = str_replace('~', '"', $operativa);
 	$operativa = unserialize($operativa);
@@ -250,13 +246,17 @@ function woo_oca_check_if_oca_selected($chosen_method)
 		foreach ($centros as $centro) {
 			echo '<option value="' . $centro['idCentroImposicion'] . "|" . $centro['CodigoPostal'] . '">' . $centro['Sucursal'] . ' / ' . $centro['Calle'] . ' ' . $centro['Numero'] . '</option>';
 			if (WC()->session->get('id_destino_sucursal_oca') !== '') {
-				echo "<script>jQuery('#SucursalesOcaDestino').val(\"" . WC()->session->get('id_destino_sucursal_oca') . "\")</script>";
-			} else {
-				echo "<script>cambiar_suc('-1')</script>";
-			}
+            	echo "<script>";
+            	echo "jQuery('#SucursalesOcaDestino').val(\"" . WC()->session->get('id_destino_sucursal_oca') . "\");";
+				echo "jQuery(\"#sucursal_oca_destino\").val(\"" . explode("|",WC()->session->get('id_destino_sucursal_oca'))[0] . "\").text().split(\"|\")[0];";
+            	echo "</script>";
+        	}
 		}
 		echo '</select>';
-	}
+	}else{
+        echo "<script>cambiar_suc('-1')</script>";
+		return;
+    }
 }
 
 // =========================================================================
