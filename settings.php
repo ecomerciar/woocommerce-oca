@@ -108,6 +108,8 @@ function print_table()
 		</thead>
 		<tbody>';
 	$previous_config = unserialize(get_option('oca_operativas'));
+	// Prevent error on looping when $var is false
+	if (empty($previous_config)) $previous_config = [];
 	$i = 0;
 	do {
 		echo '<tr>

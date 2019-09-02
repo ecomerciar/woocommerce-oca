@@ -71,6 +71,10 @@ function woo_oca_envios_oca_init()
 						'title' => __('Envío gratis', 'woocommerce'),
 						'type' => 'checkbox'
 					),
+					'envio_gratis_desde' => array(
+						'title' => __('Envío gratis desde', 'woocommerce'),
+						'type' => 'number'
+					),
 					'debug' => array(
 						'title' => __('Debug log?', 'woocommerce'),
 						'type' => 'checkbox'
@@ -159,6 +163,9 @@ function woo_oca_envios_oca_init()
 						$tipo_operativa = $operativa['type'];
 						$contrareembolso = $operativa['contrareembolso'];
 
+						$free_shipping_from = $this->get_option('envio_gratis_desde');
+						if (!empty($free_shipping_from) && WC()->cart->get_total('edit') >= $free_shipping_from)
+							$envio_gratis = 'yes';
 						if ($accion === 'envio_gratis' || $envio_gratis === 'yes') {
 							$this->addRate(0, $nombre, serialize($operativa));
 							continue;
@@ -223,7 +230,7 @@ function woo_oca_envios_oca_init()
 						$condition = true;
 						foreach ($products as $item) {
 							$product = wc_get_product($item['product_id']);
-							if($product) {
+							if ($product) {
 								if ($class !== $product->get_shipping_class()) {
 									$condition = false;
 									$break;
@@ -282,15 +289,13 @@ function woo_oca_envios_oca_init()
 			{
 				$res = array(
 					'peso' => 0,
+					'volumen' => 0
 				);
 				$largo = $ancho = $alto = 0;
 				foreach ($productos as $producto) {
 					$res['peso'] += $producto['peso'];
-					$largo += $producto['largo'];
-					$ancho += $producto['ancho'];
-					$alto += $producto['alto'];
+					$res['volumen'] += $producto['largo'] * $producto['ancho'] * $producto['alto'];
 				}
-				$res['volumen'] = $largo * $ancho * $alto;
 
 				$res['peso'] = number_format($res['peso'], 2);
 				if ($res['volumen'] < 0.000001) {
@@ -340,6 +345,7 @@ function woo_oca_envios_oca_init()
 
 				if ($this->get_instance_option('debug') === 'yes') {
 					$this->logger->debug("Precio calculado: " . $precio, unserialize(OCA_LOGGER_CONTEXT));
+					$this->logger->debug('Medidas usadas: ' . print_r($medidas_totales, true), unserialize(OCA_LOGGER_CONTEXT));
 				}
 			}
 
