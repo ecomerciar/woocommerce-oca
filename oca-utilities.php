@@ -419,6 +419,7 @@ add_filter('woocommerce_admin_order_actions', 'woo_oca_agregar_boton_etiqueta_oc
 function woo_oca_agregar_boton_etiqueta_oca($actions, $order)
 {
 	$envio_seleccionado = $order->get_items('shipping');
+	if(empty($envio_seleccionado)) return $actions;
 	$envio_seleccionado = reset($envio_seleccionado);
 	$envio_seleccionado = $envio_seleccionado->get_method_id();
 	if ($order->has_status(array('completed')) && $envio_seleccionado === 'oca') {
