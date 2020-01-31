@@ -180,7 +180,7 @@ function woo_oca_enqueue_oca_scripts()
         if (!is_checkout()) {
             wp_dequeue_script('woo-oca-script-checkout');
         } else {
-            wp_register_script('woo-oca-script-checkout', plugin_dir_url(__FILE__) . '/js/oca.js', array('jquery'));
+            wp_register_script('woo-oca-script-checkout', plugin_dir_url(__FILE__) . 'js/oca.js', array('jquery'));
             wp_localize_script(
                 'woo-oca-script-checkout',
                 'ajaxObject',
@@ -315,7 +315,7 @@ function woo_oca_check_post_data_on_purchase()
     if (
         $chosen_shipping[0] === 'oca'
         && ($chosen_operativa['type'] === 'pas' || $chosen_operativa['type'] === 'sas')
-        && empty($_POST['oca_sucursal'])
+        && (empty($_POST['oca_sucursal']) || empty(WC()->session->id_destino_sucursal_oca))
     ) {
         wc_add_notice(__('Por favor elige una sucursal de OCA'), 'error');
     }
