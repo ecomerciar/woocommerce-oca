@@ -227,7 +227,7 @@ function woo_oca_check_if_oca_selected($method, $index)
             echo '<span style="display:block; margin: 10px 0; font-size: .85em;" class="oca-select-office-message">Selecciona la sucursal de OCA donde quieres recibir tu compra</span>';
             $sucursales = woo_oca_obtener_centros_oca($customer_postcode, $chosen_operativa['contrareembolso']);
             $sucursal_seleccionada = WC()->session->get('id_destino_sucursal_oca');
-            echo '<select name="oca_sucursal" style="margin:15px 0; width: 100%;">';
+            echo '<select name="oca_sucursal" style="margin:15px 0; width: 100%;" onchange="wooOcaChangeSuc(event)">';
             echo '<option value="">Seleccionar</option>';
             foreach ($sucursales as $centro) {
                 $value = trim($centro['idCentroImposicion'] . '|' . $centro['CodigoPostal']);
