@@ -164,8 +164,9 @@ function woo_oca_envios_oca_init()
                         $contrareembolso = $operativa['contrareembolso'];
 
                         $free_shipping_from = $this->get_option('envio_gratis_desde');
-                        if (!empty($free_shipping_from) && WC()->cart->get_total('edit') >= $free_shipping_from)
+                        if (!empty($free_shipping_from) && ((float) WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax()) >= (float) $free_shipping_from) {
                             $envio_gratis = 'yes';
+                        }
                         if ($accion === 'envio_gratis' || $envio_gratis === 'yes') {
                             $this->addRate(0, $nombre, serialize($operativa));
                             continue;

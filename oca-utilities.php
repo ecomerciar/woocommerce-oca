@@ -442,12 +442,12 @@ function woo_oca_agregar_estilo_columna_oca()
  * Function woo_oca_clear_wc_shipping_rates_cache
  *
  */
-add_filter('woocommerce_checkout_update_order_review', 'woo_oca_clear_wc_shipping_rates_cache');
-function woo_oca_clear_wc_shipping_rates_cache()
+add_filter('woocommerce_shipping_packages', 'woo_oca_clear_wc_shipping_rates_cache');
+function woo_oca_clear_wc_shipping_rates_cache($packages)
 {
-    $packages = WC()->cart->get_shipping_packages();
     foreach ($packages as $key => $value) {
         $shipping_session = "shipping_for_package_$key";
         unset(WC()->session->$shipping_session);
     }
+    return $packages;
 }

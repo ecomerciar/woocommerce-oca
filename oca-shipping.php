@@ -49,23 +49,22 @@ function woo_oca_crear_datos_oca($datos = array(), $order = '', $operativa = '')
 
     $countries_obj = new WC_Countries();
     $country_states_array = $countries_obj->get_states();
-    if ($order->get_shipping_first_name()) {
+    if (!empty($order->get_shipping_first_name())) {
         $provincia = $country_states_array['AR'][$order->get_shipping_state()];
         $datos['nombre_cliente'] = $order->get_shipping_first_name();
-        $datos['apellido_cliente'] = $order->get_shipping_last_name();
-        $datos['direccion_cliente'] = $order->get_shipping_address_1();
+        $datos['apellido_cliente'] = ' ' . $order->get_shipping_last_name();
+        $datos['direccion_cliente'] = $order->get_shipping_address_1() . ' ' . $order->get_shipping_address_2();
         $datos['ciudad_cliente'] = $order->get_shipping_city();
         $datos['cp_cliente'] = $order->get_shipping_postcode();
-        $datos['observaciones_cliente'] = $order->get_shipping_address_2();
     } else {
         $provincia = $country_states_array['AR'][$order->get_billing_state()];
         $datos['nombre_cliente'] = $order->get_billing_first_name();
-        $datos['apellido_cliente'] = $order->get_billing_last_name();
-        $datos['direccion_cliente'] = $order->get_billing_address_1();
+        $datos['apellido_cliente'] = ' ' . $order->get_billing_last_name();
+        $datos['direccion_cliente'] = $order->get_billing_address_1() . ' ' . $order->get_billing_address_2();
         $datos['ciudad_cliente'] = $order->get_billing_city();
         $datos['cp_cliente'] = $order->get_billing_postcode();
-        $datos['observaciones_cliente'] = $order->get_billing_address_2();
     }
+    $datos['observaciones_cliente'] = $order->get_customer_note();
     $datos['provincia_cliente'] = $provincia;
     $datos['telefono_cliente'] = $order->get_billing_phone();
     $datos['celular_cliente'] = $order->get_billing_phone();
